@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<script src="https://openui5.hana.ondemand.com/resources/sap-ui-core.js"
+							  id="sap-ui-bootstrap"
+							  data-sap-ui-libs="sap.m, sap.ui.commons, sap.ui.table"
+							  data-sap-ui-theme="sap_bluecrystal"
+							  data-sap-ui-xx-bindingSyntax="complex">
+		</script>
+		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+		<script src="countries.js" type="text/javascript"></script>
+		<!-- Data from World Bank. source:
+		http://data.worldbank.org/data-catalog/GNI-per-capita-Atlas-and-PPP-table -->
+		<script src="GNIpercapita.js" type="text/javascript"></script>
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+		<style type="text/css">
+			#content {
+				width:760px;
+				height:500px;
+			}
+		</style>
+	</head>   
+	<body class="sapUiBody" role="application">
+		<script>
+			// let UI5 know that certain package (the one containing the Views/Controllers) is available locally (next to the HTML file)
+		    sap.ui.localResources("js");
+			jQuery.sap.require("js/ChoroplethMap");
+
+			// init model
+        	var data = {"countrydata": gniPerCapita};
+	        var oModel = new sap.ui.model.json.JSONModel();  
+	        // set the data for the model  
+	        oModel.setData(data);
+			var map = new js.ChoroplethMap({"idField": "Country", "valueField": "USdollars"});
+			map.setModel(oModel);
+			//sap.ui.getCore().setModel(oModel);
+			map.bindProperty("data", "/countrydata");
+			map.placeAt("content");
+
+			//Create an instance of the table control
+			var oTable = new sap.ui.table.Table({
+			        title: "Table Example",
+			        visibleRowCount: 7,
+			        firstVisibleRow: 3,
+			        selectionMode: sap.ui.table.SelectionMode.Single,			       
+			});
+
+			//Define the columns and the control templates to be used
+			var oColumn = new sap.ui.table.Column({
+			        label: new sap.ui.commons.Label({text: "Country code"}),
+			        template: new sap.ui.commons.TextView().bindProperty("text", "Country"),
+			        sortProperty: "Country",
+			        filterProperty: "Country",
+			        width: "200px",
+			        editable: false,
+			});			
+			var oColumn2 = new sap.ui.table.Column({
+			        label: new sap.ui.commons.Label({text: "USdollars"}),
+			        template: new sap.ui.commons.TextField({value:"{USdollars}",
+			        	change: function(evt) {			        		
+			        		map.invalidate(false);
+			        	}}),
+			        sortProperty: "USdollars",
+			        filterProperty: "USdollars",
+			        width: "200px",
+			        editable: true,
+			});
+			oTable.addColumn(oColumn);
+			oTable.addColumn(oColumn2);
+			oTable.setModel(oModel);
+			oTable.bindRows("/countrydata");
+
+			//Initially sort the table
+			oTable.sort(oTable.getColumns()[0]);
+
+			//Bring the table onto the UI 
+			oTable.placeAt("content");
+
+		</script>		
+		<div id="content"></div>
+    </body>
+</html>
