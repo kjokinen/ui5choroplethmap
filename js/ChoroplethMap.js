@@ -1,5 +1,8 @@
 jQuery.sap.declare("js.ChoroplethMap");
 
+// load countries data
+jQuery.sap.require("js.countries");
+
 sap.ui.core.Control.extend("js.ChoroplethMap", {   
     metadata : {  
       properties: {
@@ -34,7 +37,7 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
           attribution: 'Data, imagery and map information provided by <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">, OpenStreetMap <http://www.openstreetmap.org/copyright> and contributors, ODbL'
       }).addTo(map);
       
-      L.geoJson(countries, {
+      L.geoJson(countriesGeoJson, {
           onEachFeature: jQuery.proxy(this._popup, this),          
           style: jQuery.proxy(this._generateStyle, this),
       }).addTo(map);

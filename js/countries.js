@@ -1,4 +1,4 @@
-countries = {
+var countriesGeoJson = {
 "type": "FeatureCollection",
                                                                                 
 "features": [
