@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<script src="https://openui5.hana.ondemand.com/resources/sap-ui-core.js"
+							  id="sap-ui-bootstrap"
+							  data-sap-ui-libs="sap.m, sap.ui.commons"
+							  data-sap-ui-theme="sap_bluecrystal"
+							  data-sap-ui-xx-bindingSyntax="complex">
+		</script>
+		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>		
+		<!-- Data from World Bank. source:
+		http://data.worldbank.org/data-catalog/GNI-per-capita-Atlas-and-PPP-table -->
+		<script src="GNIpercapita.js" type="text/javascript"></script>
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />		
+	</head>   
+	<body class="sapUiBody" role="application">
+		<script>
+			// let UI5 know that certain package (the one containing the Views/Controllers) is available locally (next to the HTML file)
+		    sap.ui.localResources("js");
+			jQuery.sap.require("js/ChoroplethMap");			
+			// init model
+        	var data = {"countrydata": gniPerCapita};
+	        var oModel = new sap.ui.model.json.JSONModel();  
+	        // set the data for the model  
+	        oModel.setData(data);
+			var map = new js.ChoroplethMap({"idField": "Country", "valueField": "Ranking", "styleFunction": function styleFunc(feature) {
+					var featureId = feature.properties.iso_a3;
+					// This should be implemented here. Only using the map's method for convenience
+			        var value = map._getValueFromDataById(featureId);
+			        var fillColorValue = '#AAAAAA'; // default to grey
+			       	if (value > 140) {
+			       		fillColorValue = '#e5f5f9';			       		
+			       	} else if (value > 70) {
+			       		fillColorValue = '#99d8c9';
+			       	} else if (value > 0) {
+			       		fillColorValue = '#2ca25f';
+			       	} else {
+			       		fillColorValue = '#AAAAAA';
+			       	}			        
+			        return {
+			          fillColor: fillColorValue,
+			          weight: 2,
+			          opacity: 1,
+			          color: 'white',
+			          dashArray: '3',
+			          fillOpacity: 0.9
+			        };					
+				}					
+			});
+			map.setModel(oModel);
+			//sap.ui.getCore().setModel(oModel);
+			map.bindProperty("data", "/countrydata");
+			//map.placeAt("content");
+			
+			var app = new sap.m.App("myApp", {initialPage:"page1"}); // page1 should be displayed first
+      
+      
+	      	// create the first page of your application
+	      	var page1 = new sap.m.Page("page1", {
+	          title: "Hello mobile map"	                                
+	      	});	      	
+			app.addPage(page1);
+
+			app.placeAt("content");
+
+			var vbox = new sap.m.VBox();						
+			vbox.addItem(map);			
+			page1.addContent(vbox);
+			
+
+		</script>		
+		<div id="content"></div>
+    </body>
+</html>
