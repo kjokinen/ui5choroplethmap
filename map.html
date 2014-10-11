@@ -67,6 +67,16 @@
 				textHover.setText("");				
 			});	
 
+			var cb = new sap.m.CheckBox({text: "toggle pan and zoom", selected: true,
+				select:
+				function(evt) {
+					var selected = evt.mParameters.selected;
+					map.setDraggable(selected);
+					map.setZoomable(selected);					
+				}
+			});
+			vbox.addItem(cb);
+
 		</script>		
 		<div id="content"></div>
     </body>
