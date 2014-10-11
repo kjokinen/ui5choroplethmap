@@ -9,7 +9,8 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
       properties: {
         "data": "object",
         "idField": {type : "string", defaultValue : "id"},
-        "valueField": {type : "string", defaultValue : "value"}, 
+        "valueField": {type : "string", defaultValue : "value"},
+        "styleFunction": {type : "any"},
         "width" : {type : "sap.ui.core.CSSSize", defaultValue : "100%"},
         "height" : {type : "sap.ui.core.CSSSize", defaultValue : "400px"},
       },  
@@ -81,20 +82,6 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
       this._zoom = this.map.getZoom();
     },
 
-    _generateStyle: function(feature) {
-      // http://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
-      var featureId = feature.properties.iso_a3;      
-      var value = this._getValueFromDataById(featureId);
-      return {
-        fillColor: this._getFillColor(value),
-        weight: 2,
-        opacity: 1,
-        color: 'white',
-        dashArray: '3',
-        fillOpacity: 0.9
-      };
-    },
-
     _getValueFromDataById: function(id) {      
       var value = -1;
       var data = this.getData();
@@ -112,6 +99,32 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
       return value;
     },
 
+    /**
+    * Default styling used when styleFunction not given
+    */
+    _generateStyle: function(feature) {
+      var styleFunc = this.getStyleFunction();
+      if (styleFunc) {
+        return styleFunc(feature);
+      } else {
+        // use default styling
+        // http://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
+        var featureId = feature.properties.iso_a3;      
+        var value = this._getValueFromDataById(featureId);
+        return {
+          fillColor: this._getFillColor(value),
+          weight: 2,
+          opacity: 1,
+          color: 'white',
+          dashArray: '3',
+          fillOpacity: 0.9
+        };
+      }      
+    },
+
+    /**
+    * Default styling used when styleFunction not given
+    */
     _getFillColor: function(d) {
         var oNumberFormat = sap.ui.core.format.NumberFormat.getFloatInstance({
           maxFractionDigits: 0,
