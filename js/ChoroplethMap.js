@@ -15,7 +15,11 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
         "height" : {type : "sap.ui.core.CSSSize", defaultValue : "400px"},
       },  
       aggregations: {},  
-      events: {}  
+      events: {
+        "mapmouseover": {},
+        "mapmouseout": {},
+        "mapclick": {} 
+      }  
     },  
     init: function() {          
     },  
@@ -44,7 +48,7 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
       }).addTo(map);
       
       var layer = L.geoJson(countriesGeoJson, {
-          onEachFeature: jQuery.proxy(this._popup, this),          
+          onEachFeature: jQuery.proxy(this._onEachFeature, this),          
           style: jQuery.proxy(this._generateStyle, this),
       }).addTo(map);
       this._attachEventListeners();
@@ -148,7 +152,21 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
                           '#AAAAAA';
     },
 
-    _popup: function(feature, layer) {
+    _onEachFeature: function(feature, layer) {
+        var that = this;        
+        // events 
+        layer.on({
+            mouseover: function(e) {
+              that.fireMapmouseover(e);
+            },
+            mouseout: function(e) {
+              that.fireMapmouseout(e);
+            },
+            click: function(e) {
+              that.fireMapclick(e);
+            }
+        });
+        // default popup
         if (feature.properties && feature.properties.iso_a3) {
             var value = this._getValueFromDataById(feature.properties.iso_a3);
             layer.bindPopup("Country: " + feature.properties.iso_a3 + " value: " + value);
