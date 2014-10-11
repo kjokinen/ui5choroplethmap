@@ -2,6 +2,7 @@ jQuery.sap.declare("js.ChoroplethMap");
 
 // load countries data
 jQuery.sap.require("js.countries");
+jQuery.sap.require("sap.ui.core.format.NumberFormat");
 
 sap.ui.core.Control.extend("js.ChoroplethMap", {   
     metadata : {  
@@ -9,6 +10,8 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
         "data": "object",
         "idField": {type : "string", defaultValue : "id"},
         "valueField": {type : "string", defaultValue : "value"}, 
+        "width" : {type : "sap.ui.core.CSSSize", defaultValue : "100%"},
+        "height" : {type : "sap.ui.core.CSSSize", defaultValue : "400px"},
       },  
       aggregations: {},  
       events: {}  
@@ -17,8 +20,10 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
     },  
     renderer : function(oRm, oControl) {
         oRm.write("<div"); 
-        oRm.writeControlData(oControl);  // writes the Control ID and enables event handling - important!
-        oRm.write("style='width: 100%; height: 100%;'>");  
+        oRm.writeControlData(oControl);  // writes the Control ID and enables event handling - important!        
+        oRm.addStyle("width", oControl.getWidth());
+        oRm.addStyle("height", oControl.getHeight());        
+        oRm.writeStyles();
         oRm.write("</div>");
 
     },
@@ -37,7 +42,7 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
           attribution: 'Data, imagery and map information provided by <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">, OpenStreetMap <http://www.openstreetmap.org/copyright> and contributors, ODbL'
       }).addTo(map);
       
-      L.geoJson(countriesGeoJson, {
+      var layer = L.geoJson(countriesGeoJson, {
           onEachFeature: jQuery.proxy(this._popup, this),          
           style: jQuery.proxy(this._generateStyle, this),
       }).addTo(map);
