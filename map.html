@@ -28,8 +28,7 @@
 			map.setModel(oModel);
 			//sap.ui.getCore().setModel(oModel);
 			map.bindProperty("data", "/countrydata");
-			//map.placeAt("content");
-			
+						
 			var app = new sap.m.App("myApp", {initialPage:"page1"}); // page1 should be displayed first
       
       
@@ -41,10 +40,32 @@
 
 			app.placeAt("content");
 
-			var vbox = new sap.m.VBox();						
-			vbox.addItem(map);			
+			var vbox = new sap.m.VBox();		
+			var textClick = new sap.m.Text({text:""});
+			var textHover = new sap.m.Text({text:""});				
+			vbox.addItem(map);		
+			vbox.addItem(textClick);	
+			vbox.addItem(textHover);
 			page1.addContent(vbox);
-			
+			map.attachMapclick(function(evt) {				
+				var feature = evt.mParameters.target.feature;
+				if (feature) {
+					var props = feature.properties;
+					var infoText = "Click info: " + props.name + " is in " + props.region_un + ". It's GNI is " + map._getValueFromDataById(props.iso_a3);
+					textClick.setText(infoText);
+				}				
+			});			
+			map.attachMapmouseover(function(evt) {				
+				var feature = evt.mParameters.target.feature;
+				if (feature) {
+					var props = feature.properties;
+					var infoText = "Hover info: " + props.name + " is in " + props.region_un + ". It's GNI is " + map._getValueFromDataById(props.iso_a3);
+					textHover.setText(infoText);
+				}				
+			});	
+			map.attachMapmouseout(function(evt) {				
+				textHover.setText("");				
+			});	
 
 		</script>		
 		<div id="content"></div>
