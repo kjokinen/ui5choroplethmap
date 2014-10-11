@@ -13,6 +13,8 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
         "styleFunction": {type : "any"},
         "width" : {type : "sap.ui.core.CSSSize", defaultValue : "100%"},
         "height" : {type : "sap.ui.core.CSSSize", defaultValue : "400px"},
+        "draggable": {type: "boolean", defaultValue: true},
+        "zoomable": {type: "boolean", defaultValue: true}
       },  
       aggregations: {},  
       events: {
@@ -56,6 +58,34 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
 
     onExit: function() {
       this._detachEventListeners();
+    },
+
+    setDraggable: function(allow) {
+      console.log("setDraggable");
+      if (allow) {
+        this.map.dragging.enable(); 
+      } else {
+        this.map.dragging.disable(); 
+      }
+    },
+
+    setZoomable: function(allow) {
+      console.log("setZoomable");
+      if (allow) {
+        this.map.touchZoom.enable();
+        this.map.doubleClickZoom.enable();
+        this.map.scrollWheelZoom.enable();
+        this.map.boxZoom.enable();
+        this.map.keyboard.enable();
+        $(".leaflet-control-zoom").css("visibility", "visible");
+      } else {
+        this.map.touchZoom.disable();
+        this.map.doubleClickZoom.disable();
+        this.map.scrollWheelZoom.disable();
+        this.map.boxZoom.disable();
+        this.map.keyboard.disable();
+        $(".leaflet-control-zoom").css("visibility", "hidden");
+      }      
     },
 
     _attachEventListeners: function() {      
