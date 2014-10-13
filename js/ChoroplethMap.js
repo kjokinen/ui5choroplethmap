@@ -58,6 +58,9 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
           onEachFeature: jQuery.proxy(this._onEachFeature, this),          
           style: jQuery.proxy(this._generateStyle, this),
       }).addTo(map);
+      // apply draggable and zoomable
+      this._applyDraggable();
+      this._applyZoomable();
       this._attachEventListeners();
     },
 
@@ -66,31 +69,45 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
     },
 
     setDraggable: function(allow) {
-      console.log("setDraggable");
-      if (allow) {
-        this.map.dragging.enable(); 
-      } else {
-        this.map.dragging.disable(); 
-      }
+      this.mProperties["draggable"] = allow;
+      this._applyDraggable();
     },
 
     setZoomable: function(allow) {
-      console.log("setZoomable");
-      if (allow) {
-        this.map.touchZoom.enable();
-        this.map.doubleClickZoom.enable();
-        this.map.scrollWheelZoom.enable();
-        this.map.boxZoom.enable();
-        this.map.keyboard.enable();
-        $(".leaflet-control-zoom").css("visibility", "visible");
-      } else {
-        this.map.touchZoom.disable();
-        this.map.doubleClickZoom.disable();
-        this.map.scrollWheelZoom.disable();
-        this.map.boxZoom.disable();
-        this.map.keyboard.disable();
-        $(".leaflet-control-zoom").css("visibility", "hidden");
-      }      
+      this.mProperties["zoomable"] = allow; 
+      this._applyZoomable();
+    },
+
+    _applyDraggable: function() {
+      if (this.map) {        
+        var isDraggable = this.getDraggable();
+        if (isDraggable) {
+          this.map.dragging.enable(); 
+        } else {
+          this.map.dragging.disable(); 
+        }
+      }
+    },
+
+    _applyZoomable: function() {
+      if (this.map) {
+        var isZoomable = this.getZoomable();
+        if (isZoomable) {
+          this.map.touchZoom.enable();
+          this.map.doubleClickZoom.enable();
+          this.map.scrollWheelZoom.enable();
+          this.map.boxZoom.enable();
+          this.map.keyboard.enable();
+          $(".leaflet-control-zoom").css("visibility", "visible");
+        } else {
+          this.map.touchZoom.disable();
+          this.map.doubleClickZoom.disable();
+          this.map.scrollWheelZoom.disable();
+          this.map.boxZoom.disable();
+          this.map.keyboard.disable();
+          $(".leaflet-control-zoom").css("visibility", "hidden");
+        }  
+      }  
     },
 
     _attachEventListeners: function() {      
