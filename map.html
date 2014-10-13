@@ -24,7 +24,7 @@
 	        var oModel = new sap.ui.model.json.JSONModel();  
 	        // set the data for the model  
 	        oModel.setData(data);
-			var map = new js.ChoroplethMap({"idField": "Country", "valueField": "USdollars"});
+			var map = new js.ChoroplethMap({"idField": "Country", "valueField": "USdollars", "centerLat": 48, "centerLng": 18, "zoom": 4});
 			map.setModel(oModel);
 			//sap.ui.getCore().setModel(oModel);
 			map.bindProperty("data", "/countrydata");
