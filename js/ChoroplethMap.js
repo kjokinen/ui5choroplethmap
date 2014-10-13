@@ -14,7 +14,10 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
         "width" : {type : "sap.ui.core.CSSSize", defaultValue : "100%"},
         "height" : {type : "sap.ui.core.CSSSize", defaultValue : "400px"},
         "draggable": {type: "boolean", defaultValue: true},
-        "zoomable": {type: "boolean", defaultValue: true}
+        "zoomable": {type: "boolean", defaultValue: true},
+        "centerLat": {type: "float", defaultValue: "0"},
+        "centerLng": {type: "float", defaultValue: "0"},
+        "zoom": {type: "int", defaultValue: "2"}
       },  
       aggregations: {},  
       events: {
@@ -41,8 +44,10 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
 
     onAfterRendering: function() {
       var containerId = this.getId();
-      var center = (this._center) ? this._center : L.latLng(0, -10);
-      var zoom = (this._zoom) ? this._zoom : 2;
+      //var center = (this._center) ? this._center : L.latLng(0, -10);
+      //var zoom = (this._zoom) ? this._zoom : 2;
+      var center = L.latLng(this.getCenterLat(), this.getCenterLng());
+      var zoom = this.getZoom();
       var map = this.map = L.map(containerId).setView([center.lat,center.lng], zoom);
       // http://otile1.mqcdn.com/tiles/1.0.0/map/8/126/87.jpg
       L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg', {
@@ -112,8 +117,12 @@ sap.ui.core.Control.extend("js.ChoroplethMap", {
 
     _saveCurrentExtent: function() {
       // keep track of current zoom and location
-      this._center = this.map.getCenter();
-      this._zoom = this.map.getZoom();
+      //this._center = this.map.getCenter();
+      //this._zoom = this.map.getZoom();
+      var center = this.map.getCenter();
+      this.mProperties["centerLat"] = center.lat;
+      this.mProperties["centerLng"] = center.lng;      
+      this.mProperties["zoom"] = this.map.getZoom();
     },
 
     _getValueFromDataById: function(id) {      
